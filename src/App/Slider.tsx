@@ -6,7 +6,7 @@ const Slider = () => {
       </div>
 
       <div>
-        <h1>
+        <h1 className="text-[3rem] tracking-[-0.1rem] leading-[1.2]">
           Under the soft hum of streetlights she watches the world ripple
           through glass, her calm expression mirrored in the fragments of
           drifting light.
