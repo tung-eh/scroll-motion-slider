@@ -1,11 +1,15 @@
 const Navbar = () => {
   return (
-    <nav>
-      <div>
-        <p className="font-geist text-[0.85rem]">Codegrid / Experiment 501</p>
+    <nav className="fixed top-0 w-full flex justify-between items-center p-8 z-10">
+      <div className="bg-black/50 backdrop-blur-[20px] rounded border border-white/10 py-2 px-4">
+        <p className="font-geist uppercase text-[0.75rem] text-white">
+          Codegrid / Experiment 501
+        </p>
       </div>
       <div>
-        <p className="font-geist text-[0.85rem]">[ Scroll Motion Slider ]</p>
+        <p className="font-geist uppercase text-[0.75rem] text-white">
+          [ Scroll Motion Slider ]
+        </p>
       </div>
     </nav>
   )
