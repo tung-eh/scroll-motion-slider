@@ -1,3 +1,41 @@
+const slides = [
+  {
+    title:
+      'Under the soft hum of streetlights she watches the world ripple through glass, her calm expression mirrored in the fragments of drifting light.',
+    image: 'slider_img_01',
+  },
+  {
+    title:
+      'A car slices through the desert, shadow chasing the wind as clouds of dust rise behind, blurring the horizon into gold and thunder.',
+    image: 'slider_img_02',
+  },
+  {
+    title:
+      'Reflection ripple across mirrored faces, each one of a fragment of identity, caught between defiance, doubt, and the silence of thought.',
+    image: 'slider_img_03',
+  },
+  {
+    title:
+      'Soft light spills through the café window as morning settles into wood and metal, capturing the rhythm of quite human routine.',
+    image: 'slider_img_04',
+  },
+  {
+    title:
+      'Every serve becomes a battle between focus and instinct, movement flowing like rhythm as the court blurs beneath the sunlight.',
+    image: 'slider_img_05',
+  },
+  {
+    title:
+      'Amber light spills over the stage as guitars cry into smoke and shadow, where music and motion merge into pure energy.',
+    image: 'slider_img_06',
+  },
+  {
+    title:
+      'Dust erupts beneath his stride as sweat glints under floodlights, every steps pushing closer to victory, grit, and pure determination.',
+    image: 'slider_img_07',
+  },
+]
+
 const Slider = () => {
   return (
     <section className="relative h-screen w-full">
