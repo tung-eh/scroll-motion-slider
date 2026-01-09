@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/all'
+import { ScrollTrigger, SplitText } from 'gsap/all'
 
 import SlideMarker from './SlideMarker'
 
@@ -49,6 +49,7 @@ const Slider = () => {
   const sectionRef = useRef<HTMLElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
 
   const prevIndexRef = useRef<number>(undefined)
   const currIndexRef = useRef<number>(0)
@@ -100,6 +101,21 @@ const Slider = () => {
       duration: 1,
       ease: 'power2.out',
     })
+
+    const split = new SplitText(titleRef.current, {
+      type: 'lines',
+    })
+    gsap.set(split.lines, {
+      yPercent: 100,
+      opacity: 0,
+    })
+    gsap.to(split.lines, {
+      yPercent: 0,
+      opacity: 1,
+      duration: 0.75,
+      stagger: 0.1,
+      ease: 'power3.out',
+    })
   }, [slideIndex])
 
   return (
@@ -123,10 +139,12 @@ const Slider = () => {
       </div>
 
       <div className="absolute left-0 lg:left-8 top-20 lg:top-1/2 translate-0 lg:-translate-y-1/2 lg:w-1/2 text-white z-5 p-8 lg:p-0">
-        <h1 className="text-[2rem] lg:text-[3rem] tracking-[-0.1rem] leading-[1.2]">
-          Under the soft hum of streetlights she watches the world ripple
-          through glass, her calm expression mirrored in the fragments of
-          drifting light.
+        <h1
+          key={slideIndex}
+          ref={titleRef}
+          className="text-[2rem] lg:text-[3rem] tracking-[-0.1rem] leading-[1.2]"
+        >
+          {currentSlide.title}
         </h1>
       </div>
 
