@@ -1,4 +1,7 @@
+/* eslint-disable react-hooks/refs */
+
 import { useState, useRef, useEffect } from 'react'
+import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
 
@@ -8,45 +11,53 @@ const slides = [
   {
     title:
       'Under the soft hum of streetlights she watches the world ripple through glass, her calm expression mirrored in the fragments of drifting light.',
-    image: 'slider_img_01',
+    image: '/slider_img_01.jpg',
   },
   {
     title:
       'A car slices through the desert, shadow chasing the wind as clouds of dust rise behind, blurring the horizon into gold and thunder.',
-    image: 'slider_img_02',
+    image: '/slider_img_02.jpg',
   },
   {
     title:
       'Reflection ripple across mirrored faces, each one of a fragment of identity, caught between defiance, doubt, and the silence of thought.',
-    image: 'slider_img_03',
+    image: '/slider_img_03.jpg',
   },
   {
     title:
       'Soft light spills through the café window as morning settles into wood and metal, capturing the rhythm of quite human routine.',
-    image: 'slider_img_04',
+    image: '/slider_img_04.jpg',
   },
   {
     title:
       'Every serve becomes a battle between focus and instinct, movement flowing like rhythm as the court blurs beneath the sunlight.',
-    image: 'slider_img_05',
+    image: '/slider_img_05.jpg',
   },
   {
     title:
       'Amber light spills over the stage as guitars cry into smoke and shadow, where music and motion merge into pure energy.',
-    image: 'slider_img_06',
+    image: '/slider_img_06.jpg',
   },
   {
     title:
       'Dust erupts beneath his stride as sweat glints under floodlights, every steps pushing closer to victory, grit, and pure determination.',
-    image: 'slider_img_07',
+    image: '/slider_img_07.jpg',
   },
 ]
 
 const Slider = () => {
   const sectionRef = useRef<HTMLElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLImageElement>(null)
+
+  const prevIndexRef = useRef<number>(undefined)
+  const currIndexRef = useRef<number>(0)
 
   const [slideIndex, setSlideIndex] = useState(0)
+
+  const currentSlide = slides[slideIndex]
+  const previousSlide =
+    prevIndexRef.current !== undefined && slides[prevIndexRef.current]
 
   useEffect(() => {
     ScrollTrigger.create({
@@ -61,15 +72,53 @@ const Slider = () => {
           scaleY: self.progress,
         })
 
-        setSlideIndex(Math.floor(self.progress * slides.length))
+        const nextSlideIndex = Math.floor(self.progress * slides.length)
+        if (
+          currIndexRef.current !== nextSlideIndex &&
+          nextSlideIndex < slides.length
+        ) {
+          prevIndexRef.current = currIndexRef.current
+          currIndexRef.current = nextSlideIndex
+          setSlideIndex(nextSlideIndex)
+        }
       },
     })
   }, [])
 
+  useGSAP(() => {
+    gsap.set(imageRef.current, {
+      opacity: 0,
+      scale: 1.1,
+    })
+    gsap.to(imageRef.current, {
+      opacity: 1,
+      duration: 0.5,
+      ease: 'power2.out',
+    })
+    gsap.to(imageRef.current, {
+      scale: 1,
+      duration: 1,
+      ease: 'power2.out',
+    })
+  }, [slideIndex])
+
   return (
-    <section ref={sectionRef} className="relative h-screen w-full">
+    <section
+      ref={sectionRef}
+      className="relative h-screen w-full overflow-hidden"
+    >
       <div className="absolute inset-0">
-        <img src="/slider_img_01.jpg" className="w-full h-full object-cover" />
+        {previousSlide && (
+          <img
+            src={previousSlide.image}
+            className="w-full h-full object-cover"
+          />
+        )}
+        <img
+          ref={imageRef}
+          src={currentSlide.image}
+          className="absolute inset-0 w-full h-full object-cover opacity-0"
+        />
         <div className="absolute inset-0 bg-black/35" />
       </div>
 
