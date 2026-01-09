@@ -1,3 +1,7 @@
+import { useRef, useEffect } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/all'
+
 const slides = [
   {
     title:
@@ -37,8 +41,27 @@ const slides = [
 ]
 
 const Slider = () => {
+  const sectionRef = useRef<HTMLElement>(null)
+  const progressRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: 'top top',
+      end: `+=${window.innerHeight * slides.length}`,
+      scrub: 1,
+      pin: true,
+      pinSpacing: true,
+      onUpdate: (self) => {
+        gsap.to(progressRef.current, {
+          scaleY: self.progress,
+        })
+      },
+    })
+  }, [])
+
   return (
-    <section className="relative h-screen w-full">
+    <section ref={sectionRef} className="relative h-screen w-full">
       <div className="absolute inset-0">
         <img src="/slider_img_01.jpg" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/35" />
@@ -68,7 +91,10 @@ const Slider = () => {
         </div>
 
         <div className="absolute top-0 right-0 w-px h-full bg-black/35">
-          <div className="absolute top-0 left-1/2 -transform-x-1/2 w-[3px] h-full bg-white origin-top scale-y-0" />
+          <div
+            ref={progressRef}
+            className="absolute top-0 left-1/2 -transform-x-1/2 w-[3px] h-full bg-white origin-top scale-y-0"
+          />
         </div>
       </div>
     </section>
