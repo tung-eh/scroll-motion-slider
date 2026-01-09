@@ -1,6 +1,8 @@
-import { useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/all'
+
+import SlideMarker from './SlideMarker'
 
 const slides = [
   {
@@ -44,6 +46,8 @@ const Slider = () => {
   const sectionRef = useRef<HTMLElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
 
+  const [slideIndex, setSlideIndex] = useState(0)
+
   useEffect(() => {
     ScrollTrigger.create({
       trigger: sectionRef.current,
@@ -56,6 +60,8 @@ const Slider = () => {
         gsap.to(progressRef.current, {
           scaleY: self.progress,
         })
+
+        setSlideIndex(Math.floor(self.progress * slides.length))
       },
     })
   }, [])
@@ -82,7 +88,7 @@ const Slider = () => {
               key={index}
               className="font-geist text-white flex items-center gap-4"
             >
-              <span className="w-3 h-px bg-white opacity-0"></span>
+              <SlideMarker hidden={index !== slideIndex} />
               <span className="w-5 flex justify-end">
                 {(index + 1).toString().padStart(2, '0')}
               </span>
