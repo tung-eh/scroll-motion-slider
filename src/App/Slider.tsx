@@ -52,7 +52,25 @@ const Slider = () => {
         </h1>
       </div>
 
-      <div className="absolute bottom-8 lg:bottom-auto right-8 lg:top-1/2 translate-0 lg:-translate-y-1/2"></div>
+      <div className="absolute bottom-8 lg:bottom-auto right-8 lg:top-1/2 translate-0 lg:-translate-y-1/2">
+        <div className="flex flex-col gap-4 py-4 px-5">
+          {slides.map((_, index) => (
+            <p
+              key={index}
+              className="font-geist text-white flex items-center gap-4"
+            >
+              <span className="w-3 h-px bg-white opacity-0"></span>
+              <span className="w-5 flex justify-end">
+                {(index + 1).toString().padStart(2, '0')}
+              </span>
+            </p>
+          ))}
+        </div>
+
+        <div className="absolute top-0 right-0 w-px h-full bg-black/35">
+          <div className="absolute top-0 left-1/2 -transform-x-1/2 w-[3px] h-full bg-white origin-top scale-y-0" />
+        </div>
+      </div>
     </section>
   )
 }
