@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/refs */
-
 import { useState, useRef, useEffect } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
@@ -48,60 +46,83 @@ const slides = [
 const Slider = () => {
   const sectionRef = useRef<HTMLElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
+  const slideContainerRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
+  const imageOverlayRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
 
-  const prevIndexRef = useRef<number>(undefined)
   const currIndexRef = useRef<number>(0)
 
   const [slideIndex, setSlideIndex] = useState(0)
 
   const currentSlide = slides[slideIndex]
-  const previousSlide =
-    prevIndexRef.current !== undefined && slides[prevIndexRef.current]
 
   useEffect(() => {
-    ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: 'top top',
-      end: `+=${window.innerHeight * slides.length}`,
-      scrub: 1,
-      pin: true,
-      pinSpacing: true,
-      onUpdate: (self) => {
-        gsap.to(progressRef.current, {
-          scaleY: self.progress,
-        })
+    const images: HTMLImageElement[] = []
+    let loadedCount = 0
 
-        const nextSlideIndex = Math.floor(self.progress * slides.length)
-        if (
-          currIndexRef.current !== nextSlideIndex &&
-          nextSlideIndex < slides.length
-        ) {
-          prevIndexRef.current = currIndexRef.current
-          currIndexRef.current = nextSlideIndex
-          setSlideIndex(nextSlideIndex)
+    const animateNewSlide = (index: number) => {
+      if (!slideContainerRef.current || !imageOverlayRef.current) return
+      const image = images[index]
+
+      slideContainerRef.current.insertBefore(image, imageOverlayRef.current)
+      gsap.set(image, {
+        opacity: 0,
+        scale: 1.1,
+      })
+      gsap.to(image, {
+        opacity: 1,
+        duration: 0.5,
+        ease: 'power2.out',
+      })
+      gsap.to(image, {
+        scale: 1,
+        duration: 1,
+        ease: 'power2.out',
+      })
+    }
+
+    const setupScrollTrigger = () => {
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: 'top top',
+        end: `+=${window.innerHeight * slides.length}`,
+        scrub: 1,
+        pin: true,
+        pinSpacing: true,
+        onUpdate: (self) => {
+          gsap.to(progressRef.current, {
+            scaleY: self.progress,
+          })
+
+          const nextSlideIndex = Math.floor(self.progress * slides.length)
+          if (
+            currIndexRef.current !== nextSlideIndex &&
+            nextSlideIndex < slides.length
+          ) {
+            currIndexRef.current = nextSlideIndex
+            animateNewSlide(nextSlideIndex)
+            setSlideIndex(nextSlideIndex)
+          }
+        },
+      })
+    }
+
+    for (let i = 0; i < slides.length; i++) {
+      const img = new Image()
+      img.onload = () => {
+        loadedCount++
+        if (loadedCount === slides.length) {
+          setupScrollTrigger()
         }
-      },
-    })
+      }
+      img.src = slides[i].image
+      img.className = 'absolute inset-0 w-full h-full object-cover opacity-0'
+      images.push(img)
+    }
   }, [])
 
   useGSAP(() => {
-    gsap.set(imageRef.current, {
-      opacity: 0,
-      scale: 1.1,
-    })
-    gsap.to(imageRef.current, {
-      opacity: 1,
-      duration: 0.5,
-      ease: 'power2.out',
-    })
-    gsap.to(imageRef.current, {
-      scale: 1,
-      duration: 1,
-      ease: 'power2.out',
-    })
-
     const split = new SplitText(titleRef.current, {
       type: 'lines',
     })
@@ -123,19 +144,13 @@ const Slider = () => {
       ref={sectionRef}
       className="relative h-screen w-full overflow-hidden"
     >
-      <div className="absolute inset-0">
-        {previousSlide && (
-          <img
-            src={previousSlide.image}
-            className="w-full h-full object-cover"
-          />
-        )}
+      <div ref={slideContainerRef} className="absolute inset-0">
         <img
           ref={imageRef}
-          src={currentSlide.image}
-          className="absolute inset-0 w-full h-full object-cover opacity-0"
+          src={slides[0].image}
+          className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/35" />
+        <div ref={imageOverlayRef} className="absolute inset-0 bg-black/35" />
       </div>
 
       <div className="absolute left-0 lg:left-8 top-20 lg:top-1/2 translate-0 lg:-translate-y-1/2 lg:w-1/2 text-white z-5 p-8 lg:p-0">
